@@ -1,0 +1,27 @@
+{% extends 'admin_index.html' %}
+{% load tags %}
+
+{% block admin_index %}
+		{% if id %}
+		<form action="{% url 'lc' %}{{ table }}/{{ id }}" method="post">  {% csrf_token %}
+		{% else %}
+		<form action="{% url 'add' table %}" method="post">  {% csrf_token %}
+		{% endif %}
+
+						{% for obj in from_obj %}
+								{{ obj.label }}{{ obj }}
+						{% endfor %}
+		<button class="btn btn-default" type="submit" style="margin-top: 20px">Submit</button>
+		</form>
+
+
+		{% if id %}
+				<form action="{% url 'delete' table id %}" method="post">  {% csrf_token %}
+						<input type="text" value="{{ id }}" name="_id" style="display: none">
+				<button type="submit" class="btn btn-danger" style="position: relative;top: -35px;right: -100px">Delete</button>
+				</form>
+		{% endif %}
+
+
+
+{% endblock %}

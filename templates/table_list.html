@@ -1,0 +1,28 @@
+{% extends 'admin_index.html' %}
+{% load tags %}
+
+{% block admin_index %}
+
+<table class="table table-condensed ">
+
+	{% for obj in obj_list %}
+				<tr>
+						<td><a href="{% url 'lc' %}{{ table }}/{{ obj.id }}">{{ obj }}</a>
+						</td>
+				</tr>
+		{% endfor %}
+</table>
+
+
+
+
+		<a class="btn btn-default" href="{% url 'lc' %}{{ table }}/add" role="button" style="margin: 20px">增加</a>
+
+
+{#<a class="btn btn-default" href="#" role="button"  style="margin: 20px">删除</a>#}
+
+
+
+
+
+{% endblock %}

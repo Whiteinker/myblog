@@ -1,0 +1,49 @@
+{% extends 'tourist/index.html' %}
+
+{% load tou_tags %}
+
+{% block indexpage %}
+<link rel="stylesheet" href="/static/jquery_comment/lc_comment.css">
+
+
+
+{% if userinfo.is_admin %}
+	<div style="height: 36px;width: 40px;position:relative;right: -800px ;text-align: center">
+			<button type="button" class="btn btn-default" href="{% url 'editepage' id %}" onclick="bj(this)">编辑</button>
+	</div>
+{% endif %}
+
+<div id="content" style="background-color: #faf2cc;height: auto;width: 800px;margin-top: 5px;position: relative;right:-30px" >
+{{ content }}
+</div>
+
+<div>
+{#评论#}
+
+</div>
+
+
+
+<script>
+	$(document).ready(function () {
+			$.post("{% url 'get_comment' %}", { art_id:{{ id }} },
+   function(data){
+     {#alert("Data Loaded: " + data);#}
+   });
+  })
+</script>
+
+<script>
+function bj(obj) {
+		var url = $(obj).attr("href")
+		window.location.href=url;
+}
+$("content").ready(function () {
+    {#alert('s')#}
+	 var width_ =  $("#content img").attr('class','img-responsive')
+
+})
+
+</script>
+
+{% endblock %}

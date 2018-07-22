@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block base %}
+<body style="background-color: #f1f1f1">
+
+<div class="center" style=" background-color:white;width: 500px;height:300px;margin-top: 200px;margin-left: auto;margin-right: auto;" >
+<div style="position: relative;padding:20px;">
+		<form method="post" action="{% url 'login' %}?next={{ next_url }}">{% csrf_token %}
+			<div class="form-group">
+				<label for="exampleInputEmail1">Email address</label>
+				<input name = "email" type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
+			</div>
+			<div class="form-group">
+				<label for="exampleInputPassword1">Password</label>
+				<input name="password" type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+			</div>
+
+			<button type="submit" class="btn btn-default" style="">登录</button>
+		</form>
+</div>
+		<div style="position: relative;right: -280px;top: -45px">
+				{#		注册模态对话框#}
+				<!-- Button trigger modal -->
+				<a  data-toggle="modal" data-target="#myModal">忘记密码|注册账户</a>
+				<!-- Modal -->
+				<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" >
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<h4 class="modal-title" id="myModalLabel">用户注册/修改密码</h4>
+							</div>
+							<div class="modal-body">
+
+{#											<label for="exampleInputName2">Name</label>#}
+											<input id="create_email" class="form-control" type="email" name="email" placeholder="请输入注册邮箱" style="width: 400px ">
+											<button id="send_email_button" class="btn btn-primary"  type="submit" style="position: relative;top: -35px;right: -420px">免费获取验证码</button>
+											<p id="email_msg" class="inp" style="color:red" ></p>
+											<input id="valid_num" class="inp form-control" type="text" name="password_" placeholder="请输入验证码">
+											<p id="valid_msg" class="inp"></p>
+											<input id="passwd" class="inp form-control" type="password"  placeholder="请输入密码 ">
+											<input id="passwd_" class="inp form-control" type="password"  placeholder="请再次输入密码" >
+											<p id="passwd_msg" class="inp"></p>
+
+
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+								<button type="button" id="register" class="btn btn-primary">确定</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+<style>
+				.inp{
+					width: 400px;
+					margin-bottom: 20px;
+					position: relative;
+					top: -30px;
+				}
+</style>
+<script>
+
+
+	$("#register").click(function () {
+	    var email = $("#create_email").val()
+	    var valid_num = $("#valid_num").val()
+			var passwd = $("#passwd").val()
+			var passwd_ = $("#passwd_").val()
+			$.post("{% url 'createuser' %}", { sign:1,email:email,valid_num:valid_num,passwd:passwd,passd_:passwd_ },
+							function(data){
+							var d = JSON.parse(data)
+							$("#valid_msg").text(d.valid_msg)
+							$("#passwd_msg").text(d.passwd_msg)
+							});
+  })
+</script>
+
+<script type="text/javascript">
+				{#$(document).ajaxError(function() {#}
+				{#	alert('发送失败,请刷新后重新尝试')#}
+				{#$("#send_email_button").attr('disabled',false);#}
+				{#{);#}
+
+ {#$(document).ajaxSend(function(evt, request, settings) {#}
+ {#    alert('send')#}
+	{#	 ttl_()#}
+     {#alert($(this).text('asdfasdfasdf'))#}
+
+ {#{);#}
+
+		$("#send_email_button").click(function sendemail(){
+						{#$(this).attr('disabled',true);#}
+
+						var email = $("#create_email").val()
+						$.post("{% url 'createuser' %}", { sign:0,email:email },
+							function(data){
+						    var d = JSON.parse(data)
+									{#alert("Data Loaded: " + d.msg);#}
+									$("#email_msg").text(d.msg)
+									if (d.ttl) { countdown = parseInt(d.ttl);
+									ttl_()
+									}
+							});
+
+							})
+
+					{#countdown = 60#}
+				function ttl_(){
+						var obj = $("#send_email_button");
+						settime(obj);
+						}
+						function settime(obj) { //发送验证码倒计时
+						if (countdown == 0) {
+								obj.attr('disabled',false);
+								//obj.removeattr("disabled");
+								obj.text("免费获取验证码");
+								countdown = 60;
+								return;
+						} else {
+								obj.attr('disabled',true);
+								obj.text("重新发送(" + countdown + ")");
+								countdown--;
+						}
+				setTimeout(function() {
+						settime(obj) }
+						,1000)
+				}
+</script>
+
+
+
+{#				注册账号#}
+				<!-- Button trigger modal -->
+{#				<a  data-toggle="modal" data-target="#myModal">没有帐号?立即注册</a>#}
+{#				<!-- Modal -->#}
+{#				<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">#}
+{#					<div class="modal-dialog" role="document">#}
+{#						<div class="modal-content">#}
+{#							<div class="modal-header">#}
+{#								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>#}
+{#								<h4 class="modal-title" id="myModalLabel">用户注册</h4>#}
+{#							</div>#}
+{#							<div class="modal-body">#}
+{#									<form action="">#}
+{#											<input type="email" name="email">#}
+{#											<input type="password" name="password">#}
+{#									</form>#}
+{#							</div>#}
+{#							<div class="modal-footer">#}
+{#								<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>#}
+{#								<button type="submit" class="btn btn-primary">确定</button>#}
+{#							</div>#}
+{#						</div>#}
+{#					</div>#}
+{#				</div>#}
+
+		</div>
+</div>
+
+
+<script>
+
+</script>
+
+</body>
+
+{% endblock %}

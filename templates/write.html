@@ -1,0 +1,170 @@
+{% extends 'admin_index.html' %}
+
+{% block admin_index %}
+{% load tags %}
+
+<script src="/static/ajaxImageUpload/js/upload.js"></script>
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>文本编辑</title>
+    <style type="text/css">
+        .toolbar {
+            border: 1px solid #ccc;
+        }
+        .text {
+            border: 1px solid #ccc;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<div style="height: auto;width: 1200px;margin: 0 auto">
+		{% if id %}
+		<form action="{% url 'editepage' id %}" method="post">  {% csrf_token %}
+		{% else %}
+		<form action="{% url 'writepage' %}" method="post">  {% csrf_token %}
+		{% endif %}
+		{% for field in formset %}
+				<div style="margin-top: 20px;margin-bottom: 20px;width: 500px">
+				{{ field.label }}{{ field }}
+				</div>
+		{% endfor %}
+
+		<input type="file" style="display: none" name="file" class="upload-input" id='js_uploadBtn' value=""/>
+		{% if obj %}
+		<img id="title_image" style="height:250px;margin-bottom: 30px" src="{{ obj.title_image }}" alt="">
+		{% else %}
+		<img id="title_image" style="height:250px;margin-bottom: 30px" src="" alt="">
+		{% endif %}
+		<button type="button" class="btn btn-default" onclick=upload() style="margin-bottom: 30px">上传</button>
+
+				<div id="div1" class="toolbar">
+				</div>
+				<!--可使用 min-height 实现编辑区域自动增加高度-->
+				<div id="div2" class="text" >
+
+				</div>
+				<div style="margin-bottom: 30px">
+
+				<button type="button" id="btn3" class="btn btn-default" style="margin-top: 20px;margin-right: 10px">Clear Edit</button>
+				<button type="button" id="btn2" class="btn btn-default" onclick="reloadedit()" style="margin-top: 20px;margin-right: 10px">Reload</button>
+				<button type="submit" id="btn1" class="btn btn-default" style="margin-top: 20px;margin-right: 10px">Submit</button>
+				{% if id %}
+						<button type="button" id="btn5" class="btn btn-default" onclick="view(this)" href="{{ obj.plate.url }}/{{ id }}" style="margin-top: 20px;margin-right: 10px">View</button>
+						<a class="btn btn-default" href="{% url 'table_list' 'artical' %}" role="button" style="margin-top: 20px;margin-right: 10px">Artical List</a>
+				{% endif %}
+				</div>
+</form>
+
+				{% if id %}
+
+						<form action="{% url 'delete' "artical" id %}" method="post">  {% csrf_token %}
+							<input type="text" value="{{ id }}" name="_id "style="display: none">
+							<button type="submit" class="btn btn-danger" style="position: relative;top: -63px;right: -445px">Delete</button>
+						</form>
+
+				{% endif %}
+
+
+
+
+				<script>
+						{#button view  触发  转到用户视图#}
+						function view(obj) {
+								var url = $(obj).attr("href")
+								window.location.href=url;
+						}
+		function upload() {
+		     $("#js_uploadBtn").trigger('click')
+				 }
+
+        $("#js_uploadBtn").ajaxImageUpload({
+            url: '{% url 'upload_title_image' %}',     //上传的服务器地址
+            data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+						{#"imagename":imgname,"size":size#}
+            {#maxNum: 1, //允许上传图片数量#}
+            {#hidenInputName:'asd.jpg', // 上传成功后追加的隐藏input名，注意不要带[]，会自动带[]，不写默认和上传按钮的name相同#}
+            zoom: true, //允许上传图片点击放大
+            {#allowType: ["gif", "jpeg", "jpg", "bmp",'png'], #}
+            maxSize :10,
+						before: function () {
+    				},
+            success: function (data) {
+                {#alert(data.src); //上传成功回调函数#}
+								$("#title_image").attr("src",data.src)
+            },
+            error: function (e) {
+                alert(data.msc);
+
+            }
+        });
+
+		</script>
+				<script>
+				function reloadedit() {  //reload
+						location.reload()
+        }
+				</script>
+				<script type="text/javascript" src="/static/wangEditor.js"></script>
+				<script type="text/javascript" src="/static/wangEditor.css"></script>
+				<script type="text/javascript">
+						var E = window.wangEditor;
+
+						var editor = new E('#div1', '#div2');  // 两个参数也可以传入 elem 对象，class 选择器
+						editor.customConfig.zIndex = 10;
+						editor.customConfig.uploadImgServer = "{% url 'upload_image' %}";
+
+						{#editor.customConfig.debug = location.href.indexOf('wangeditor_debug_mode=1') > 0#}
+						editor.customConfig.colors = ['#ffffff','#FF0000','#000000','#00FF00','#0000FF','#00FFFF','#FFFF00','#DC143C']
+						editor.customConfig.withCredentials = false;
+						editor.customConfig.pasteFilterStyle = true;
+						editor.customConfig.uploadImgParams = {
+						csrfmiddlewaretoken:'{{ csrf_token }}'
+						};
+						editor.customConfig.menus = [
+						'head',  // 标题
+						'bold',  // 粗体
+						'fontSize',  // 字号
+						'fontName',  // 字体
+						'italic',  // 斜体
+						'underline',  // 下划线
+						'strikeThrough',  // 删除线
+						'foreColor',  // 文字颜色
+						'backColor',  // 背景颜色
+						'link',  // 插入链接
+						'list',  // 列表
+						'justify',  // 对齐方式
+						'quote',  // 引用
+						'emoticon',  // 表情
+						'image',  // 插入图片
+						'table',  // 表格
+						{#'video',  // 插入视频#}
+						'code',  // 插入代码
+						'undo',  // 撤销
+						'redo'  // 重复
+				];
+						editor.create();
+						editor.txt.append("<br>");
+						{% if id %}
+						editor.txt.html('{% display_content id %}');
+						{% endif %}
+						document.getElementById('btn1').addEventListener('click', function () {
+						// 读取 html
+						$("#id_content").val(editor.txt.html());
+						{#alert($('#title_image').val())#}
+						$('#id_title_image').val($('#title_image').attr('src'))
+
+				}, false)
+
+						document.getElementById('btn3').addEventListener('click', function () {
+						// 读取 html
+						editor.txt.clear()
+						{#editor.txt.clear()#}
+				}, false)
+				</script>
+</div>
+
+
+{% endblock %}

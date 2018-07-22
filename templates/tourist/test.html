@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block base %}
+
+{#<link href="/static/ajaxImageUpload/css/upload.css" type="text/css" rel="stylesheet" />#}
+{#<script src="/static/ajaxImageUpload/js/jquery.js"></script>#}
+<script src="/static/ajaxImageUpload/js/upload.js"></script>
+
+
+{#    <p class="upload-tip">请上传Title</p>#}
+		<input type="file" style="display: none" name="file" class="upload-input" id='js_uploadBtn' value=""/>
+		<img id="title_image" src="/image/1.jpg" alt="">
+		<button type="button" class="btn btn-default" onclick=upload()>上传</button>
+
+
+{#            <div class="upload-btn"></div>#}
+
+
+
+
+		<script>
+		function upload() {
+		     $("#js_uploadBtn").trigger('click')
+				 }
+        $("#js_uploadBtn").ajaxImageUpload({
+            url: '/test',     //上传的服务器地址
+            {#data: { name:'勾国印' },#}
+            {#maxNum: 1, //允许上传图片数量#}
+            {#hidenInputName:'asd.jpg', // 上传成功后追加的隐藏input名，注意不要带[]，会自动带[]，不写默认和上传按钮的name相同#}
+            {#zoom: true, //允许上传图片点击放大#}
+            {#allowType: ["gif", "jpeg", "jpg", "bmp",'png'], //允许上传图片的类型#}
+            {#maxSize :2, //允许上传图片的最大尺寸，单位M#}
+
+            success: function (data) {
+                alert(data.src); //上传成功回调函数
+                {#console.log(data);#}
+								$("#title_image").attr("src",data.src)
+            },
+            error: function (e) {
+                alert('上传失败回调函数');
+                console.log(e);
+            }
+        });
+
+		</script>
+
+{% endblock %}
